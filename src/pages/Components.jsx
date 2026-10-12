@@ -16,8 +16,6 @@ import {
   AlertDialogTrigger,
   AlertTitle,
   Avatar,
-  AvatarFallback,
-  AvatarImage,
   Badge,
   Breadcrumb,
   BreadcrumbItem,
@@ -193,16 +191,9 @@ function Components() {
         </Section>
 
         <Section title="Avatar">
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
-          <Avatar>
-            <AvatarFallback>AL</AvatarFallback>
-          </Avatar>
-          <Avatar className="h-12 w-12">
-            <AvatarFallback>LG</AvatarFallback>
-          </Avatar>
+          <Avatar name="Sofia Davis" src="https://github.com/shadcn.png" />
+          <Avatar name="Alex Lee" />
+          <Avatar name="Lena Gray" size="lg" />
         </Section>
 
         <Section
