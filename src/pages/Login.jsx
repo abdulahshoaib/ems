@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Button,
   Card,
@@ -9,15 +9,94 @@ import {
   CardHeader,
   CardTitle,
   Checkbox,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
   Input,
   Label,
   useToast,
 } from "../components/ui";
+import {
+  AuthFrame,
+  authCardClass,
+  authDialogClass,
+  authErrorClass,
+  authFieldClass,
+  authLabelClass,
+  authMutedClass,
+} from "./AuthFrame.jsx";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+function ForgotPassword() {
+  const { toast } = useToast();
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+
+  function submit(event) {
+    event.preventDefault();
+    if (!EMAIL_RE.test(email)) {
+      setError("Enter a valid email address.");
+      return;
+    }
+    toast({
+      title: "Reset link sent",
+      description: `Check ${email} for a link to choose a new password.`,
+      variant: "success",
+    });
+    setEmail("");
+    setError("");
+    setOpen(false);
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger className="text-xs text-[var(--d-muted)] hover:text-[var(--d-text)]">
+        Forgot password?
+      </DialogTrigger>
+      <DialogContent className={authDialogClass}>
+        <DialogHeader>
+          <DialogTitle className="!text-[var(--d-text)]">Reset password</DialogTitle>
+          <DialogDescription className="!text-[var(--d-muted)]">
+            We will email you a link to choose a new password.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={submit} className="space-y-3" noValidate>
+          <div className="space-y-1.5">
+            <Label htmlFor="reset-email" className={authLabelClass}>
+              Email
+            </Label>
+            <Input
+              id="reset-email"
+              type="email"
+              autoComplete="email"
+              placeholder="you@example.com"
+              value={email}
+              aria-invalid={error ? true : undefined}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                setError("");
+              }}
+              className={authFieldClass}
+            />
+            {error ? <p className={authErrorClass}>{error}</p> : null}
+          </div>
+          <Button type="submit" className="w-full">
+            Send reset link
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 function Login() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -43,47 +122,45 @@ function Login() {
     if (Object.keys(next).length > 0) return;
     toast({
       title: "Signed in",
-      description: "Welcome back!",
+      description: "Welcome back.",
       variant: "success",
     });
+    navigate("/dashboard");
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center px-4 py-10">
-      <Card className="w-full max-w-sm text-left">
+    <AuthFrame>
+      <Card className={authCardClass}>
         <CardHeader>
           <CardTitle>Sign in</CardTitle>
-          <CardDescription>
-            Enter your email and password to continue.
+          <CardDescription className={authMutedClass}>
+            Use your email and password to open ems.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-3" noValidate>
             <div className="space-y-1.5">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className={authLabelClass}>
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="you@example.com"
                 autoComplete="email"
                 value={form.email}
+                aria-invalid={errors.email ? true : undefined}
                 onChange={update("email")}
+                className={authFieldClass}
               />
-              {errors.email ? (
-                <p className="text-xs text-red-600 dark:text-red-400">
-                  {errors.email}
-                </p>
-              ) : null}
+              {errors.email ? <p className={authErrorClass}>{errors.email}</p> : null}
             </div>
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  to="#"
-                  className="text-xs text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
-                >
-                  Forgot password?
-                </Link>
+                <Label htmlFor="password" className={authLabelClass}>
+                  Password
+                </Label>
+                <ForgotPassword />
               </div>
               <Input
                 id="password"
@@ -91,12 +168,12 @@ function Login() {
                 placeholder="••••••••"
                 autoComplete="current-password"
                 value={form.password}
+                aria-invalid={errors.password ? true : undefined}
                 onChange={update("password")}
+                className={authFieldClass}
               />
               {errors.password ? (
-                <p className="text-xs text-red-600 dark:text-red-400">
-                  {errors.password}
-                </p>
+                <p className={authErrorClass}>{errors.password}</p>
               ) : null}
             </div>
             <div className="flex items-center gap-2">
@@ -104,11 +181,9 @@ function Login() {
                 id="remember"
                 checked={form.remember}
                 onChange={update("remember")}
+                className="!accent-white"
               />
-              <Label
-                htmlFor="remember"
-                className="font-normal text-zinc-600 dark:text-zinc-400"
-              >
+              <Label htmlFor="remember" className={`font-normal ${authMutedClass}`}>
                 Remember me
               </Label>
             </div>
@@ -118,18 +193,15 @@ function Login() {
           </form>
         </CardContent>
         <CardFooter className="justify-center">
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            Don&apos;t have an account?{" "}
-            <Link
-              to="/register"
-              className="font-medium text-zinc-900 hover:underline dark:text-zinc-50"
-            >
-              Sign up
+          <p className="text-xs text-[var(--d-muted)]">
+            No account yet?{" "}
+            <Link to="/register" className="font-medium text-[var(--d-text)] hover:underline">
+              Create one
             </Link>
           </p>
         </CardFooter>
       </Card>
-    </div>
+    </AuthFrame>
   );
 }
 
