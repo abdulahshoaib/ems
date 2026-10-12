@@ -1,7 +1,15 @@
-import { useCallback, useRef, useState } from 'react'
+import { Fragment, useCallback, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Avatar } from './avatar'
-import { getPageTitle } from './nav-items'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from './breadcrumb'
+import { getBreadcrumbs, getPageTitle } from './nav-items'
 import { useDismissable } from '../../hooks/useDismissable'
 import { formatRelativeTime } from '../../lib/dates'
 import { BellIcon, LogOutIcon, MenuIcon, SettingsIcon, UserIcon } from './icons'
@@ -134,30 +142,58 @@ function UserMenu({ user }) {
   )
 }
 
+const CRUMB_LINK = '!text-[var(--d-muted)] hover:!text-[var(--d-text)]'
+
 export function Topbar({ user, notifications, unreadCount, onMarkAllRead, onOpenNav }) {
   const location = useLocation()
   const title = getPageTitle(location.pathname)
+  const crumbs = getBreadcrumbs(location.pathname)
 
   return (
     <header className="d-topbar sticky top-0 z-20 border-b border-[var(--d-line)] backdrop-blur">
-      <div className="flex items-center gap-2 px-4 py-2 sm:px-6">
-        <button
-          type="button"
-          onClick={onOpenNav}
-          aria-label="Open navigation"
-          className="d-focus inline-flex h-7 w-7 items-center justify-center rounded-md text-[var(--d-muted)] hover:bg-white/[0.06] hover:text-[var(--d-text)] lg:hidden"
-        >
-          <MenuIcon className="h-4 w-4" />
-        </button>
+      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 px-4 py-2 sm:px-6">
+        <div className="flex min-w-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={onOpenNav}
+            aria-label="Open navigation"
+            className="d-focus inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-[var(--d-muted)] hover:bg-white/[0.06] hover:text-[var(--d-text)] lg:hidden"
+          >
+            <MenuIcon className="h-4 w-4" />
+          </button>
 
-        <h1 className="min-w-0 flex-1 truncate">{title}</h1>
+          <Breadcrumb className="min-w-0">
+            <BreadcrumbList className="!flex-nowrap !text-[12.5px] !text-[var(--d-muted)]">
+              {crumbs.map((crumb, index) => (
+                <Fragment key={crumb.to ?? crumb.label}>
+                  {index > 0 && <BreadcrumbSeparator className="!text-[var(--d-subtle)]" />}
+                  <BreadcrumbItem className="min-w-0">
+                    {crumb.current ? (
+                      <BreadcrumbPage className="truncate !font-medium !text-[var(--d-text)]">
+                        {crumb.label}
+                      </BreadcrumbPage>
+                    ) : (
+                      <BreadcrumbLink to={crumb.to} className={`truncate ${CRUMB_LINK}`}>
+                        {crumb.label}
+                      </BreadcrumbLink>
+                    )}
+                  </BreadcrumbItem>
+                </Fragment>
+              ))}
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
 
-        <NotificationMenu
-          notifications={notifications}
-          unreadCount={unreadCount}
-          onMarkAllRead={onMarkAllRead}
-        />
-        <UserMenu user={user} />
+        <h1 className="max-w-[40vw] truncate text-center">{title}</h1>
+
+        <div className="flex items-center justify-end gap-1">
+          <NotificationMenu
+            notifications={notifications}
+            unreadCount={unreadCount}
+            onMarkAllRead={onMarkAllRead}
+          />
+          <UserMenu user={user} />
+        </div>
       </div>
     </header>
   )
