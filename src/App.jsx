@@ -8,6 +8,8 @@ import { DiscoverEvents } from "./pages/dashboard/DiscoverEvents";
 import { MyEvents } from "./pages/dashboard/MyEvents";
 import { Profile } from "./pages/dashboard/Profile";
 import { Settings } from "./pages/dashboard/Settings";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
 
 function App() {
   return (
@@ -16,14 +18,12 @@ function App() {
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route path="/components" element={<Components />} />
-          <Route path="/login" />
-          <Route path="/register" />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/events" />
           <Route path="/events/:id" />
           <Route path="/my-events/:id" />
 
-          {/* Authenticated dashboard. Wrap this route with the auth guard from
-              feat/auth once protected routes exist. */}
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Overview />} />
             <Route path="discover" element={<DiscoverEvents />} />
