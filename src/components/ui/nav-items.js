@@ -8,9 +8,25 @@ export const NAV_ITEMS = [
   { to: '/dashboard/settings', label: 'Settings', icon: SettingsIcon },
 ]
 
-export function getPageTitle(pathname) {
-  const match = [...NAV_ITEMS]
+function matchNavItem(pathname) {
+  return [...NAV_ITEMS]
     .sort((a, b) => b.to.length - a.to.length)
     .find((item) => pathname === item.to || pathname.startsWith(`${item.to}/`))
-  return match ? match.label : 'Dashboard'
+}
+
+export function getPageTitle(pathname) {
+  return matchNavItem(pathname)?.label ?? 'Dashboard'
+}
+
+/** Dashboard, then the current page. On the dashboard itself that is one item. */
+export function getBreadcrumbs(pathname) {
+  const page = matchNavItem(pathname)
+  const current = page?.label ?? 'Dashboard'
+  if (!page || page.to === '/dashboard') {
+    return [{ label: 'Dashboard', current: true }]
+  }
+  return [
+    { label: 'Dashboard', to: '/dashboard' },
+    { label: current, current: true },
+  ]
 }

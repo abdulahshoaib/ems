@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { cn } from "../../lib/utils";
 
 function ChevronRightIcon({ className }) {
@@ -42,16 +43,15 @@ function BreadcrumbItem({ className, ...props }) {
   );
 }
 
-function BreadcrumbLink({ className, ...props }) {
-  return (
-    <a
-      className={cn(
-        "transition-colors hover:text-zinc-900 dark:hover:text-zinc-50",
-        className,
-      )}
-      {...props}
-    />
+function BreadcrumbLink({ className, to, ...props }) {
+  const classes = cn(
+    "transition-colors hover:text-zinc-900 dark:hover:text-zinc-50",
+    className,
   );
+
+  if (to) return <Link to={to} className={classes} {...props} />;
+
+  return <a className={classes} {...props} />;
 }
 
 function BreadcrumbPage({ className, ...props }) {
