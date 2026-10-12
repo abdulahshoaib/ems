@@ -143,6 +143,47 @@
     border: 1px solid var(--d-line-strong);
     font-size: 0.8125rem;
   }
+
+  /* Layered backdrop: offset light, a fading dot field, then fine grain. */
+  .d-stage {
+    position: relative;
+    isolation: isolate;
+    background-color: #000;
+    background-image:
+      radial-gradient(ellipse 80% 48% at 72% -4%, rgba(199, 210, 254, 0.28), transparent 52%),
+      radial-gradient(ellipse 36% 32% at 8% 22%, rgba(99, 102, 241, 0.14), transparent 56%),
+      radial-gradient(ellipse 24% 18% at 48% 8%, rgba(125, 211, 252, 0.08), transparent 50%);
+  }
+
+  .d-stage::before,
+  .d-stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .d-stage::before {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.7) 0.6px, transparent 0.65px);
+    background-size: 22px 22px;
+    mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent 68%);
+    opacity: 0.2;
+  }
+
+  .d-stage::after {
+    opacity: 0.14;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.9'/></svg>");
+    background-size: 160px 160px;
+  }
+
+  .d-stage-auth {
+    background-image: radial-gradient(
+      ellipse 46% 36% at 50% 46%,
+      rgba(186, 196, 255, 0.16),
+      transparent 62%
+    );
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
