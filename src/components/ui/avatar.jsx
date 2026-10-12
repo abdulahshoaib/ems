@@ -1,58 +1,31 @@
-import { createContext, useContext, useState } from "react";
-import { cn } from "../../lib/utils";
+import { getInitials } from '../../lib/format'
 
-const AvatarContext = createContext({ loaded: false, setLoaded: () => {} });
+const SIZES = {
+  sm: 'h-7 w-7 text-[10.5px]',
+  md: 'h-6.5 w-6.5 text-[10.5px]',
+  lg: 'h-11 w-11 text-[15px]',
+  xl: 'h-14 w-14 text-lg',
+}
 
-function Avatar({ className, ...props }) {
-  const [loaded, setLoaded] = useState(false);
+export function Avatar({ name = '', src, size = 'md', className = '' }) {
+  const sizeClasses = SIZES[size] ?? SIZES.md
 
-  return (
-    <AvatarContext.Provider value={{ loaded, setLoaded }}>
-      <span
-        className={cn(
-          "relative flex h-9 w-9 shrink-0 overflow-hidden rounded-full",
-          className,
-        )}
-        {...props}
+  if (src) {
+    return (
+      <img
+        src={src}
+        alt={`${name} profile photo`}
+        className={`shrink-0 rounded-full object-cover ${sizeClasses} ${className}`}
       />
-    </AvatarContext.Provider>
-  );
-}
-
-function AvatarImage({ className, onLoad, onError, alt = "", ...props }) {
-  const { setLoaded } = useContext(AvatarContext);
-
-  return (
-    <img
-      alt={alt}
-      onLoad={(event) => {
-        setLoaded(true);
-        onLoad?.(event);
-      }}
-      onError={(event) => {
-        setLoaded(false);
-        onError?.(event);
-      }}
-      className={cn("aspect-square h-full w-full object-cover", className)}
-      {...props}
-    />
-  );
-}
-
-function AvatarFallback({ className, ...props }) {
-  const { loaded } = useContext(AvatarContext);
-
-  if (loaded) return null;
+    )
+  }
 
   return (
     <span
-      className={cn(
-        "absolute inset-0 flex items-center justify-center rounded-full bg-zinc-100 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300",
-        className,
-      )}
-      {...props}
-    />
-  );
+      aria-hidden="true"
+      className={`inline-flex shrink-0 items-center justify-center rounded-full bg-white/[0.09] font-semibold text-[var(--d-text)] ring-1 ring-white/10 ${sizeClasses} ${className}`}
+    >
+      {getInitials(name)}
+    </span>
+  )
 }
-
-export { Avatar, AvatarImage, AvatarFallback };
