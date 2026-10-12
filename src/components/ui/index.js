@@ -14,9 +14,9 @@ export {
   SelectLabel,
 } from "./select";
 export { Badge } from "./badge";
-export { Avatar, AvatarImage, AvatarFallback } from "./avatar";
+export { Avatar } from "./avatar";
 export { Separator } from "./separator";
-export { Skeleton } from "./skeleton";
+export { Skeleton, EventRowSkeleton, ActivityRowSkeleton, MetricsSkeleton } from "./skeleton";
 export { Spinner } from "./spinner";
 export {
   Card,
@@ -106,3 +106,15 @@ export {
 } from "./toast";
 export { useToast } from "./toast-context";
 export { Progress } from "./progress";
+
+// Dashboard components.
+export { DashboardLayout } from "./dashboard-layout";
+export { Sidebar } from "./sidebar";
+export { Topbar } from "./topbar";
+export { NAV_ITEMS, getPageTitle } from "./nav-items";
+export { Section, List } from "./section";
+export { EmptyState, ErrorState } from "./empty-state";
+export { EventRow } from "./event-row";
+export { EventDetailsModal } from "./event-details-modal";
+export { FilterTabs } from "./filter-tabs";
+export { ActivityList } from "./activity-list";
