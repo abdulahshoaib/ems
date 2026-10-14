@@ -1,8 +1,9 @@
-import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
-import { Sidebar } from './sidebar'
-import { Topbar } from './topbar'
-import { useDashboardStore } from '../../hooks/useDashboardStore'
+import { useState } from "react";
+import { Outlet } from "react-router-dom";
+import { Sidebar } from "./sidebar";
+import { Topbar } from "./topbar";
+import { useDashboardStore } from "../../hooks/useDashboardStore";
+import { useSelector } from "react-redux";
 
 /**
  * Authenticated dashboard shell: sidebar + top bar + routed content.
@@ -13,10 +14,11 @@ import { useDashboardStore } from '../../hooks/useDashboardStore'
  * instead of the mock profile in src/data/user.js.
  */
 export function DashboardLayout() {
-  const store = useDashboardStore()
-  const [isNavOpen, setIsNavOpen] = useState(false)
+  const user = useSelector((state) => state.auth.user);
+  const store = useDashboardStore();
+  const [isNavOpen, setIsNavOpen] = useState(false);
 
-  const badges = store.summary ? { upcoming: store.summary.upcoming } : {}
+  const badges = store.summary ? { upcoming: store.summary.upcoming } : {};
 
   return (
     <div className="flex min-h-svh w-full">
@@ -25,27 +27,30 @@ export function DashboardLayout() {
       </a>
 
       <Sidebar
+        user={user}
         isOpen={isNavOpen}
         onClose={() => setIsNavOpen(false)}
         badges={badges}
-        user={store.data?.user}
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <Topbar
-          user={store.data?.user}
+          user={user}
           notifications={store.data?.notifications ?? []}
           unreadCount={store.unreadCount}
           onMarkAllRead={store.markNotificationsRead}
           onOpenNav={() => setIsNavOpen(true)}
         />
 
-        <main id="dashboard-content" className="flex-1 px-4 py-4 sm:px-6 sm:py-5">
+        <main
+          id="dashboard-content"
+          className="flex-1 px-4 py-4 sm:px-6 sm:py-5"
+        >
           <div className="mx-auto w-full max-w-5xl">
             <Outlet context={store} />
           </div>
         </main>
       </div>
     </div>
-  )
+  );
 }

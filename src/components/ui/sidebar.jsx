@@ -1,26 +1,32 @@
-import { NavLink, Link } from 'react-router-dom'
-import { NAV_ITEMS } from './nav-items'
-import { Avatar } from './avatar'
-import { CloseIcon, SparklesIcon } from './icons'
+import { NavLink, Link } from "react-router-dom";
+import { NAV_ITEMS } from "./nav-items";
+import { Avatar } from "./avatar";
+import { CloseIcon, SparklesIcon } from "./icons";
 
 function navLinkClasses({ isActive }) {
   return [
-    'd-focus flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] transition-colors',
+    "d-focus flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-[13px] transition-colors",
     isActive
-      ? 'bg-white/[0.08] font-medium text-[var(--d-text)]'
-      : 'text-[var(--d-muted)] hover:bg-white/[0.05] hover:text-[var(--d-text)]',
-  ].join(' ')
+      ? "bg-white/[0.08] font-medium text-[var(--d-text)]"
+      : "text-[var(--d-muted)] hover:bg-white/[0.05] hover:text-[var(--d-text)]",
+  ].join(" ");
 }
 
 export function Sidebar({ isOpen, onClose, badges = {}, user }) {
+  // const user = useSelector((state) => state.auth.user);
+
   const content = (
     <div className="flex h-full flex-col px-2.5 py-3">
       <div className="flex items-center justify-between px-1.5 pb-4">
-        <Link to="/dashboard" className="d-focus flex items-center gap-2 rounded-md" aria-label="EventHub dashboard home">
-          <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-white text-[var(--d-invert)]">
+        <Link
+          to="/dashboard"
+          className="d-focus flex items-center gap-2 rounded-md"
+          aria-label="EventHub dashboard home"
+        >
+          <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-white text-(--d-invert)">
             <SparklesIcon className="h-3.5 w-3.5" />
           </span>
-          <span className="text-[13.5px] font-semibold tracking-tight text-[var(--d-text)]">
+          <span className="text-[13.5px] font-semibold tracking-tight text-(--d-text)">
             EventHub
           </span>
         </Link>
@@ -28,7 +34,7 @@ export function Sidebar({ isOpen, onClose, badges = {}, user }) {
           type="button"
           onClick={onClose}
           aria-label="Close navigation"
-          className="d-focus inline-flex h-7 w-7 items-center justify-center rounded-md text-[var(--d-muted)] hover:bg-white/[0.06] hover:text-[var(--d-text)] lg:hidden"
+          className="d-focus inline-flex h-7 w-7 items-center justify-center rounded-md text-(--d-muted) hover:bg-white/6 hover:text-(--d-text) lg:hidden"
         >
           <CloseIcon className="h-4 w-4" />
         </button>
@@ -37,56 +43,59 @@ export function Sidebar({ isOpen, onClose, badges = {}, user }) {
       <nav aria-label="Dashboard" className="flex flex-1 flex-col">
         <ul className="flex flex-col gap-0.5">
           {NAV_ITEMS.map((item) => {
-            const Icon = item.icon
-            const badgeCount = item.badgeKey ? badges[item.badgeKey] : undefined
+            const Icon = item.icon;
+            const badgeCount = item.badgeKey
+              ? badges[item.badgeKey]
+              : undefined;
             return (
               <li key={item.to}>
-                <NavLink to={item.to} end={item.end} className={navLinkClasses} onClick={onClose}>
+                <NavLink
+                  to={item.to}
+                  end={item.end}
+                  className={navLinkClasses}
+                  onClick={onClose}
+                >
                   <Icon className="h-4 w-4 shrink-0" />
                   <span className="flex-1 truncate">{item.label}</span>
-                  {typeof badgeCount === 'number' && badgeCount > 0 && (
-                    <span className="text-[11.5px] tabular-nums text-[var(--d-subtle)]">
+                  {typeof badgeCount === "number" && badgeCount > 0 && (
+                    <span className="text-[11.5px] tabular-nums text-(--d-subtle)">
                       {badgeCount}
                     </span>
                   )}
                 </NavLink>
               </li>
-            )
+            );
           })}
         </ul>
       </nav>
 
-      <div className="flex flex-col gap-3 border-t border-[var(--d-line)] px-1.5 pt-3">
+      <div className="flex flex-col gap-3 border-t border-(--d-line) px-1.5 pt-3">
         <div className="flex items-center gap-2.5">
-          <Avatar name={user?.name} src={user?.avatarUrl} size="sm" />
+          <Avatar name={user?.fullname} src={user?.avatarUrl} size="sm" />
           <div className="flex min-w-0 flex-col">
-            <span className="truncate text-[12.5px] font-medium text-[var(--d-text)]">
-              {user?.name}
+            <span className="truncate text-[12.5px] font-medium text-(--d-text)">
+              {user?.fullname}
             </span>
-            <span className="truncate text-[11px] text-[var(--d-subtle)]">{user?.email}</span>
+            <span className="truncate text-[11px] text-(--d-subtle)">
+              {user?.email}
+            </span>
           </div>
         </div>
-        <Link
-          to="/"
-          className="d-focus rounded-md py-1 text-[12px] text-[var(--d-subtle)] hover:text-[var(--d-text)]"
-        >
-          Back to site
-        </Link>
       </div>
     </div>
-  )
+  );
 
   return (
     <>
       {/* Mobile slide-over */}
       <div
-        className={`fixed inset-0 z-40 lg:hidden ${isOpen ? '' : 'pointer-events-none invisible'}`}
+        className={`fixed inset-0 z-40 lg:hidden ${isOpen ? "" : "pointer-events-none invisible"}`}
         aria-hidden={!isOpen}
       >
         <div className="absolute inset-0 bg-black/70" onClick={onClose} />
         <div
-          className={`absolute inset-y-0 left-0 w-[15rem] max-w-[85vw] border-r border-[var(--d-line-strong)] bg-[#0a0a0b] transition-transform duration-200 ${
-            isOpen ? 'translate-x-0' : '-translate-x-full'
+          className={`absolute inset-y-0 left-0 w-60 max-w-[85vw] border-r border-(--d-line-strong) bg-[#0a0a0b] transition-transform duration-200 ${
+            isOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
           {content}
@@ -94,9 +103,9 @@ export function Sidebar({ isOpen, onClose, badges = {}, user }) {
       </div>
 
       {/* Desktop rail */}
-      <aside className="sticky top-0 hidden h-svh w-[13.5rem] shrink-0 border-r border-[var(--d-line)] lg:block">
+      <aside className="sticky top-0 hidden h-svh w-54 shrink-0 border-r border-(--d-line) lg:block">
         {content}
       </aside>
     </>
-  )
+  );
 }
