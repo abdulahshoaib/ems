@@ -28,6 +28,8 @@ import {
   authLabelClass,
   authMutedClass,
 } from "./AuthFrame.jsx";
+import { useDispatch } from "react-redux";
+import { login } from "../features/auth/authSlice.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -55,13 +57,13 @@ function ForgotPassword() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="text-xs text-[var(--d-muted)] hover:text-[var(--d-text)]">
+      <DialogTrigger className="text-xs text-(--d-muted) hover:text-(--d-text)">
         Forgot password?
       </DialogTrigger>
       <DialogContent className={authDialogClass}>
         <DialogHeader>
-          <DialogTitle className="!text-[var(--d-text)]">Reset password</DialogTitle>
-          <DialogDescription className="!text-[var(--d-muted)]">
+          <DialogTitle className="text-(--d-text)!">Reset password</DialogTitle>
+          <DialogDescription className="text-(--d-muted)!">
             We will email you a link to choose a new password.
           </DialogDescription>
         </DialogHeader>
@@ -96,12 +98,16 @@ function ForgotPassword() {
 
 function Login() {
   const { toast } = useToast();
+
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [form, setForm] = useState({
     email: "",
     password: "",
     remember: false,
   });
+
   const [errors, setErrors] = useState({});
 
   function update(field) {
@@ -116,15 +122,33 @@ function Login() {
   function handleSubmit(event) {
     event.preventDefault();
     const next = {};
+
     if (!EMAIL_RE.test(form.email)) next.email = "Enter a valid email address.";
     if (!form.password) next.password = "Password is required.";
+
     setErrors(next);
+
     if (Object.keys(next).length > 0) return;
+
+    const user = {
+      id: crypto.randomUUID(),
+      email: form.email,
+    };
+
+    dispatch(login(user));
+
+    if (form.remember) {
+      localStorage.setItem("currentUser", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("currentUser");
+    }
+
     toast({
       title: "Signed in",
       description: "Welcome back.",
       variant: "success",
     });
+
     navigate("/dashboard");
   }
 
@@ -153,7 +177,9 @@ function Login() {
                 onChange={update("email")}
                 className={authFieldClass}
               />
-              {errors.email ? <p className={authErrorClass}>{errors.email}</p> : null}
+              {errors.email ? (
+                <p className={authErrorClass}>{errors.email}</p>
+              ) : null}
             </div>
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
@@ -181,9 +207,12 @@ function Login() {
                 id="remember"
                 checked={form.remember}
                 onChange={update("remember")}
-                className="!accent-white"
+                className="accent-white!"
               />
-              <Label htmlFor="remember" className={`font-normal ${authMutedClass}`}>
+              <Label
+                htmlFor="remember"
+                className={`font-normal ${authMutedClass}`}
+              >
                 Remember me
               </Label>
             </div>
@@ -193,9 +222,12 @@ function Login() {
           </form>
         </CardContent>
         <CardFooter className="justify-center">
-          <p className="text-xs text-[var(--d-muted)]">
+          <p className="text-xs text-(--d-muted)">
             No account yet?{" "}
-            <Link to="/register" className="font-medium text-[var(--d-text)] hover:underline">
+            <Link
+              to="/register"
+              className="font-medium text-(--d-text) hover:underline"
+            >
               Create one
             </Link>
           </p>
