@@ -21,7 +21,7 @@ export function AuthFrame({ children }) {
 
   return (
     <div className="d-stage d-stage-auth flex min-h-svh flex-col">
-      <header className="relative z-10 border-b border-[var(--d-line)] bg-black">
+      <header className="relative z-10 border-b border-(--d-line) bg-black">
         <Container className="flex h-12 items-center">
           <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
             ← Go back
@@ -30,7 +30,7 @@ export function AuthFrame({ children }) {
       </header>
       <main className="flex flex-1 items-center justify-center px-4 py-10">
         <div className="w-full max-w-sm">
-          <p className="mb-4 text-center text-[13px] font-semibold tracking-[0.18em] text-[var(--d-text)]">
+          <p className="mb-4 text-center text-[13px] font-semibold tracking-[0.18em] text-(--d-text)">
             ems
           </p>
           {children}

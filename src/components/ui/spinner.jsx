@@ -14,7 +14,7 @@ function Spinner({ className, size = "default", label = "Loading", ...props }) {
       viewBox="0 0 24 24"
       fill="none"
       className={cn(
-        "animate-spin text-zinc-900 dark:text-zinc-50",
+        "animate-spin text-zinc-900 dark:text-zinc-900",
         sizes[size] ?? sizes.default,
         className,
       )}

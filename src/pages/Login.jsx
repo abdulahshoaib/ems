@@ -17,6 +17,7 @@ import {
   DialogTrigger,
   Input,
   Label,
+  Spinner,
   useToast,
 } from "../components/ui";
 import {
@@ -28,8 +29,10 @@ import {
   authLabelClass,
   authMutedClass,
 } from "./AuthFrame.jsx";
+
 import { useDispatch } from "react-redux";
 import { login } from "../features/auth/authSlice.js";
+import { auth } from "../lib/auth.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -107,7 +110,7 @@ function Login() {
     password: "",
     remember: false,
   });
-
+  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   function update(field) {
@@ -119,37 +122,60 @@ function Login() {
     };
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
+
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
     const next = {};
 
-    if (!EMAIL_RE.test(form.email)) next.email = "Enter a valid email address.";
-    if (!form.password) next.password = "Password is required.";
+    if (!EMAIL_RE.test(form.email)) {
+      next.email = "Enter a valid email address.";
+    }
+
+    if (!form.password) {
+      next.password = "Password is required.";
+    }
 
     setErrors(next);
 
     if (Object.keys(next).length > 0) return;
 
-    const user = {
-      id: crypto.randomUUID(),
-      email: form.email,
-    };
+    setLoading(true);
 
-    dispatch(login(user));
+    try {
+      await delay(1000);
 
-    if (form.remember) {
-      localStorage.setItem("currentUser", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("currentUser");
+      const user = {
+        email: form.email,
+        password: form.password,
+      };
+
+      if (auth(user)) {
+        console.log("hellouserfound");
+        dispatch(login(user));
+
+        if (form.remember) {
+          localStorage.setItem("currentUser", JSON.stringify(user));
+        } else {
+          localStorage.removeItem("currentUser");
+        }
+
+        toast({
+          title: "Signed in",
+          description: "Welcome back.",
+          variant: "success",
+        });
+
+        navigate("/dashboard");
+      } else {
+        setErrors({
+          password: "Invalid email or password.",
+        });
+      }
+    } finally {
+      setLoading(false);
     }
-
-    toast({
-      title: "Signed in",
-      description: "Welcome back.",
-      variant: "success",
-    });
-
-    navigate("/dashboard");
   }
 
   return (
@@ -216,8 +242,8 @@ function Login() {
                 Remember me
               </Label>
             </div>
-            <Button type="submit" className="w-full">
-              Sign in
+            <Button disabled={loading} type="submit" className="w-full">
+              {loading ? <Spinner size="md" /> : <span>Sign in</span>}
             </Button>
           </form>
         </CardContent>
