@@ -151,9 +151,15 @@ function Login() {
         password: form.password,
       };
 
-      if (auth(user)) {
-        console.log("hellouserfound");
-        dispatch(login(user));
+      const authUser = auth(user);
+
+      if (authUser) {
+        dispatch(
+          login({
+            email: authUser.email,
+            fullname: authUser.fullname,
+          }),
+        );
 
         if (form.remember) {
           localStorage.setItem("currentUser", JSON.stringify(user));

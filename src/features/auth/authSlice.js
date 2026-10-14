@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { users } from "../../lib/data";
 
 const authSlice = createSlice({
   name: "auth",
@@ -10,20 +9,10 @@ const authSlice = createSlice({
 
   reducers: {
     login: (state, action) => {
-      const authUser = users.find((user) => {
-        user.email === action.payload.email &&
-          user.password === action.payload.password;
-      });
-
-      if (authUser) {
-        state.user = {
-          email: authUser.email,
-          fullname: authUser.fullname,
-        };
-      }
+      state.user = action.payload;
     },
 
-    login: (state) => {
+    logout: (state) => {
       state.user = null;
     },
   },
