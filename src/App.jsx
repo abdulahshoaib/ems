@@ -10,6 +10,7 @@ import { Profile } from "./pages/dashboard/Profile";
 import { Settings } from "./pages/dashboard/Settings";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
+import ProtectedRoute from "./components/protected-route.jsx";
 
 function App() {
   return (
@@ -24,12 +25,14 @@ function App() {
           <Route path="/events/:id" />
           <Route path="/my-events/:id" />
 
-          <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route index element={<Overview />} />
-            <Route path="discover" element={<DiscoverEvents />} />
-            <Route path="my-events" element={<MyEvents />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="settings" element={<Settings />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route index element={<Overview />} />
+              <Route path="discover" element={<DiscoverEvents />} />
+              <Route path="my-events" element={<MyEvents />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="settings" element={<Settings />} />
+            </Route>
           </Route>
         </Routes>
       </ToastProvider>
