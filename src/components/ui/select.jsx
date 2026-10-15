@@ -161,11 +161,12 @@ function SelectValue({ className, placeholder, ...props }) {
 function SelectContent({ className, children, ...props }) {
   const { open } = useSelect("SelectContent");
 
-  if (!open) return null;
-
+  // Kept mounted (just hidden) so SelectItems always register their labels —
+  // otherwise SelectValue can only resolve the selected label after the first open.
   return (
     <div
       role="listbox"
+      hidden={!open}
       className={cn(
         "absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-y-auto rounded-md border border-zinc-200 bg-white p-1 text-[13px] text-zinc-900 shadow-md outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50",
         className,
@@ -177,7 +178,13 @@ function SelectContent({ className, children, ...props }) {
   );
 }
 
-function SelectItem({ className, value, children, disabled = false, ...props }) {
+function SelectItem({
+  className,
+  value,
+  children,
+  disabled = false,
+  ...props
+}) {
   const { value: selected, setValue, registerItem } = useSelect("SelectItem");
   const isSelected = selected === value;
   const label = typeof children === "string" ? children : String(value);
@@ -199,7 +206,9 @@ function SelectItem({ className, value, children, disabled = false, ...props }) 
       )}
       {...props}
     >
-      {isSelected ? <CheckIcon className="absolute left-2 h-3.5 w-3.5" /> : null}
+      {isSelected ? (
+        <CheckIcon className="absolute left-2 h-3.5 w-3.5" />
+      ) : null}
       {children}
     </button>
   );
