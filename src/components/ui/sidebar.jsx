@@ -1,7 +1,7 @@
-import { NavLink, Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { NAV_ITEMS } from "./nav-items";
 import { Avatar } from "./avatar";
-import { CloseIcon, SparklesIcon } from "./icons";
+import { CloseIcon } from "./icons";
 
 function navLinkClasses({ isActive }) {
   return [
@@ -13,23 +13,12 @@ function navLinkClasses({ isActive }) {
 }
 
 export function Sidebar({ isOpen, onClose, badges = {}, user }) {
-  // const user = useSelector((state) => state.auth.user);
-
   const content = (
     <div className="flex h-full flex-col px-2.5 py-3">
       <div className="flex items-center justify-between px-1.5 pb-4">
-        <Link
-          to="/dashboard"
-          className="d-focus flex items-center gap-2 rounded-md"
-          aria-label="EventHub dashboard home"
-        >
-          <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-white text-(--d-invert)">
-            <SparklesIcon className="h-3.5 w-3.5" />
-          </span>
-          <span className="text-[13.5px] font-semibold tracking-tight text-(--d-text)">
-            EventHub
-          </span>
-        </Link>
+        <span className="text-[13.5px] font-semibold tracking-tight text-(--d-text)">
+          ems
+        </span>
         <button
           type="button"
           onClick={onClose}
