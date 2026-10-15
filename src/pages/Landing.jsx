@@ -96,7 +96,8 @@ const FAQS = [
   {
     value: "where",
     question: "Are events online or in person?",
-    answer: "Both, plus hybrid. Each listing says where it is, or that it is online.",
+    answer:
+      "Both, plus hybrid. Each listing says where it is, or that it is online.",
   },
   {
     value: "full",
@@ -151,9 +152,7 @@ function Landing() {
 
       <header className="d-topbar sticky top-0 z-40 border-b border-white/10 backdrop-blur-md">
         <Container className="flex h-12 items-center gap-4">
-          <a href="#top" className="text-[13px] font-semibold tracking-tight">
-            ems
-          </a>
+          <img src="../../public/ems.png" className="w-8 h-8" alt="ems logo" />
           <nav className="hidden items-center gap-4 sm:flex" aria-label="Page">
             {NAV.map((item) => (
               <a
@@ -190,7 +189,10 @@ function Landing() {
                   Jump to a section or sign in.
                 </SheetDescription>
               </SheetHeader>
-              <nav className="flex flex-col gap-3 text-[13px]" aria-label="Page">
+              <nav
+                className="flex flex-col gap-3 text-[13px]"
+                aria-label="Page"
+              >
                 {NAV.map((item) => (
                   <a key={item.href} href={item.href}>
                     {item.label}
@@ -215,8 +217,8 @@ function Landing() {
             A calmer way to gather people.
           </h1>
           <p className="mt-3 max-w-md text-[14px] leading-relaxed text-[var(--d-muted)]">
-            ems is a small place to publish an event, take registrations, and see
-            who is actually coming.
+            ems is a small place to publish an event, take registrations, and
+            see who is actually coming.
           </p>
           <div className="mt-6 flex flex-wrap items-center gap-2">
             <Button to="/register" size="lg">
@@ -286,7 +288,12 @@ function Landing() {
 
         <Container id="faq" size="md" className="scroll-mt-16 pb-12">
           <h2 className="d-label">Questions</h2>
-          <Accordion type="single" collapsible defaultValue="cost" className="mt-2">
+          <Accordion
+            type="single"
+            collapsible
+            defaultValue="cost"
+            className="mt-2"
+          >
             {FAQS.map((item) => (
               <AccordionItem
                 key={item.value}

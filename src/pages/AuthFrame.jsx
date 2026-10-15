@@ -30,9 +30,9 @@ export function AuthFrame({ children }) {
       </header>
       <main className="flex flex-1 items-center justify-center px-4 py-10">
         <div className="w-full max-w-sm">
-          <p className="mb-4 text-center text-[13px] font-semibold tracking-[0.18em] text-(--d-text)">
-            ems
-          </p>
+          <div className="mb-4 flex justify-center">
+            <img src="/ems.png" alt="EMS logo" className="h-10 w-10" />
+          </div>
           {children}
         </div>
       </main>
