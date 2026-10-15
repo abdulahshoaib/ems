@@ -152,7 +152,7 @@ function Landing() {
 
       <header className="d-topbar sticky top-0 z-40 border-b border-white/10 backdrop-blur-md">
         <Container className="flex h-12 items-center gap-4">
-          <img src="../../public/ems.png" className="w-8 h-8" alt="ems logo" />
+          <img src="/ems.png" className="w-8 h-8" alt="ems logo" />
           <nav className="hidden items-center gap-4 sm:flex" aria-label="Page">
             {NAV.map((item) => (
               <a

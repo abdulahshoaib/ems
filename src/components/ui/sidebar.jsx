@@ -16,7 +16,7 @@ export function Sidebar({ isOpen, onClose, badges = {}, user }) {
   const content = (
     <div className="flex h-full flex-col px-2.5 py-3">
       <div className="flex items-center gap-3 px-1.5 pb-4">
-        <img src="../../public/ems.png" className="w-8 h-8" alt="ems logo" />
+        <img src="/ems.png" className="w-8 h-8" alt="ems logo" />
         <span className="text-[13.5px] font-semibold tracking-tight text-(--d-text)">
           ems
         </span>
