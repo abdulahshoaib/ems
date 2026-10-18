@@ -206,6 +206,9 @@ function normalizeEvent(event) {
  * the event details dialog).
  */
 export async function fetchTicketmasterEvents(options = {}) {
-  const events = await getEvents(options);
-  return events.map(normalizeEvent);
+  const { events, totalPages } = await getEvents(options);
+  return {
+    events: events.map(normalizeEvent),
+    totalPages,
+  };
 }

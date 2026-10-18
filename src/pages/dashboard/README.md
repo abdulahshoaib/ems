@@ -22,37 +22,15 @@ features: event detail/register actions open an in-dashboard dialog, and the
 
 ## Data
 
-All data is mock data and lives outside the UI:
+Registrations live in the Redux `events` slice and are saved to `localStorage`.
+Discover loads events from Ticketmaster. Profile uses the auth user. Settings
+preferences live in the Redux `settings` slice.
 
-- `src/data/events.js` — event catalogue and the user's registrations
-- `src/data/user.js` — signed-in user profile
-- `src/data/activity.js` — activity feed and notifications
-- `src/data/selectors.js` — every derived value (states, filters, summary counts)
-- `src/data/mockApi.js` — async access layer that mirrors a future API client
-- `src/hooks/useDashboardStore.js` — in-memory store seeded from the mock layer
+`src/data/selectors.js` derives counts and upcoming/completed state from those
+registrations. `upcoming` vs `completed` comes from the event date in
+`getEventState`.
 
-Summary counts are always derived from the event/registration arrays, never
-hardcoded, so the cards and lists cannot drift apart.
-
-Registration `status` (`confirmed` / `pending` / `cancelled`) is a stored
-lifecycle value; `upcoming` vs `completed` is derived from the event date in
-`getEventState`, so temporal state never goes stale.
-
-## Authentication integration (required before release)
-
-The dashboard is **not** guarded yet — it is deliberately usable during
-development. To integrate with `feat/auth`:
-
-1. Wrap the `/dashboard` route (or `DashboardLayout`) with the protected-route
-   component from `feat/auth` so unauthenticated visitors are redirected to
-   `/login`.
-2. Replace the mock profile in `src/data/user.js` with the session user from the
-   auth context/provider, and pass it into `useDashboardStore` (or replace the
-   store's `user` with the session value).
-3. Replace `src/data/mockApi.js` with the real API client. The store already
-   handles `loading` / `ready` / `error` states, so the pages need no changes.
-4. Persist profile edits and registration changes — currently they are in-memory
-   only and reset on reload.
+The `/dashboard` routes are wrapped in `ProtectedRoute`.
 
 ## Dependencies
 

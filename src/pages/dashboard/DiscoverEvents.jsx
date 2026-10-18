@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
-import { Button } from "../../components/ui/button";
+import { Button, useToast } from "../../components/ui";
 import { EmptyState, ErrorState } from "../../components/ui/empty-state";
 import { EventRow } from "../../components/ui/event-row";
 import { EventDetailsModal } from "../../components/ui/event-details-modal";
@@ -18,27 +19,44 @@ import { CalendarIcon, SearchIcon } from "../../components/ui/icons";
 
 import { ALL_COUNTRIES, COUNTRIES } from "../../data/countries";
 import { getRegistration } from "../../data/selectors";
-import { useDashboardData } from "../../hooks/useDashboardData";
+import {
+  cancelRegistration,
+  registerEvent,
+  selectMyRegistrations,
+} from "../../features/events/eventsSlice";
 import { useTicketmasterEvents } from "../../hooks/useTicketmasterEvents";
 import { pluralize } from "../../lib/format";
 
 export function DiscoverEvents() {
-  const {
-    data: dashboardData,
-    registerForEvent,
-    cancelRegistration,
-  } = useDashboardData();
+  const dispatch = useDispatch();
+  const { toast } = useToast();
+  const user = useSelector((state) => state.auth.user);
+  const registrations = useSelector(selectMyRegistrations);
+
+  function registerForEvent(event) {
+    dispatch(registerEvent({ event, userEmail: user.email }));
+    toast({
+      title: "Registered",
+      description: `${event.title} is now in My Events.`,
+      variant: "success",
+    });
+  }
+
+  function cancelForEvent(registration) {
+    dispatch(cancelRegistration(registration.id));
+  }
 
   const [country, setCountry] = useState(ALL_COUNTRIES);
-  const { events: upcoming, status, error, retry } = useTicketmasterEvents({
-    countryCode: country === ALL_COUNTRIES ? "" : country,
-  });
+  const [page, setPage] = useState(0);
+  const { events: upcoming, totalPages, status, error, retry } =
+    useTicketmasterEvents({
+      countryCode: country === ALL_COUNTRIES ? "" : country,
+      page,
+    });
 
   const [category, setCategory] = useState("all");
   const [query, setQuery] = useState("");
   const [activeEvent, setActiveEvent] = useState(null);
-
-  const registrations = dashboardData?.registrations ?? [];
 
   const visible = useMemo(() => {
     const term = query.trim().toLowerCase();
@@ -106,7 +124,13 @@ export function DiscoverEvents() {
         </p>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Select value={country} onValueChange={setCountry}>
+          <Select
+            value={country}
+            onValueChange={(value) => {
+              setCountry(value);
+              setPage(0);
+            }}
+          >
             <SelectTrigger aria-label="Filter by country" className="w-40">
               <SelectValue placeholder="All countries" />
             </SelectTrigger>
@@ -165,6 +189,7 @@ export function DiscoverEvents() {
                 setCategory("all");
                 setQuery("");
                 setCountry(ALL_COUNTRIES);
+                setPage(0);
               }}
             >
               Clear filters
@@ -184,11 +209,35 @@ export function DiscoverEvents() {
                 event={event}
                 registration={getRegistration(registrations, event.id)}
                 onViewDetails={setActiveEvent}
-                onRegister={(target) => registerForEvent(target.id)}
+                onRegister={registerForEvent}
               />
             ))}
           </List>
         </>
+      )}
+
+      {status === "success" && (
+        <div className="flex items-center justify-between gap-3">
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={page === 0}
+            onClick={() => setPage((current) => current - 1)}
+          >
+            Previous
+          </Button>
+          <p className="text-[13px] text-[var(--d-muted)]">
+            Page {page + 1} of {totalPages}
+          </p>
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={page + 1 >= totalPages}
+            onClick={() => setPage((current) => current + 1)}
+          >
+            Next
+          </Button>
+        </div>
       )}
 
       <p className="text-[12px] text-[var(--d-subtle)]">
@@ -201,8 +250,8 @@ export function DiscoverEvents() {
           activeEvent ? getRegistration(registrations, activeEvent.id) : null
         }
         onClose={() => setActiveEvent(null)}
-        onRegister={(event) => registerForEvent(event.id)}
-        onCancel={(registration) => cancelRegistration(registration.id)}
+        onRegister={registerForEvent}
+        onCancel={cancelForEvent}
       />
     </div>
   );
