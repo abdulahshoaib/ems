@@ -11,7 +11,8 @@ function toApiDateTime(value) {
  */
 export async function getEvents({
   keyword = "",
-  size = 200,
+  size = 20,
+  page = 0,
   sort = "date,asc",
   startDateTime = new Date(),
   countryCode = "",
@@ -26,6 +27,7 @@ export async function getEvents({
   const params = new URLSearchParams({
     apikey: apiKey,
     size: String(size),
+    page: String(page),
     sort,
     startDateTime: toApiDateTime(startDateTime),
     includeTBA: "no",
@@ -57,5 +59,8 @@ export async function getEvents({
 
   const result = await response.json();
 
-  return result._embedded?.events ?? [];
+  return {
+    events: result._embedded?.events ?? [],
+    totalPages: result.page?.totalPages ?? 1,
+  };
 }
