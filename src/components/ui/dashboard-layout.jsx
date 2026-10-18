@@ -1,24 +1,22 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
-import { useDashboardStore } from "../../hooks/useDashboardStore";
-import { useSelector } from "react-redux";
+import { selectMyRegistrations } from "../../features/events/eventsSlice";
+import { deriveSummary } from "../../data/selectors";
 
-/**
- * Authenticated dashboard shell: sidebar + top bar + routed content.
- *
- * NOTE (auth integration): this layout is intentionally not guarded. The
- * protected-route wrapper from feat/auth should wrap the `/dashboard` route
- * once it lands, and the signed-in user should be supplied from that session
- * instead of the mock profile in src/data/user.js.
- */
 export function DashboardLayout() {
   const user = useSelector((state) => state.auth.user);
-  const store = useDashboardStore();
+  const registrations = useSelector(selectMyRegistrations);
   const [isNavOpen, setIsNavOpen] = useState(false);
 
-  const badges = store.summary ? { upcoming: store.summary.upcoming } : {};
+  const upcoming = useMemo(() => {
+    const events = registrations.map((item) => item.event);
+    return deriveSummary(events, registrations).upcoming;
+  }, [registrations]);
+
+  const badges = { upcoming };
 
   return (
     <div className="flex min-h-svh w-full">
@@ -34,20 +32,14 @@ export function DashboardLayout() {
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <Topbar
-          user={user}
-          notifications={store.data?.notifications ?? []}
-          unreadCount={store.unreadCount}
-          onMarkAllRead={store.markNotificationsRead}
-          onOpenNav={() => setIsNavOpen(true)}
-        />
+        <Topbar user={user} onOpenNav={() => setIsNavOpen(true)} />
 
         <main
           id="dashboard-content"
           className="flex-1 px-4 py-4 sm:px-6 sm:py-5"
         >
           <div className="mx-auto w-full max-w-5xl">
-            <Outlet context={store} />
+            <Outlet />
           </div>
         </main>
       </div>

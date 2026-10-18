@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Section } from "../../components/ui/section";
+import { setPreference } from "../../features/settings/settingsSlice";
 
 function ToggleRow({ id, label, description, checked, onChange }) {
   return (
@@ -37,15 +38,11 @@ function ToggleRow({ id, label, description, checked, onChange }) {
 }
 
 export function Settings() {
-  const [preferences, setPreferences] = useState({
-    eventReminders: true,
-    registrationUpdates: true,
-    nearbyEvents: false,
-    productNews: false,
-  });
+  const dispatch = useDispatch();
+  const preferences = useSelector((state) => state.settings.preferences);
 
   function updatePreference(key, value) {
-    setPreferences((previous) => ({ ...previous, [key]: value }));
+    dispatch(setPreference({ key, value }));
   }
 
   return (

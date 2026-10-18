@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { Button } from '../../components/ui/button'
-import { EmptyState, ErrorState } from '../../components/ui/empty-state'
+import { EmptyState } from '../../components/ui/empty-state'
 import { EventRow } from '../../components/ui/event-row'
 import { EventDetailsModal } from '../../components/ui/event-details-modal'
 import { List } from '../../components/ui/section'
-import { EventRowSkeleton } from '../../components/ui/skeleton'
 import { FilterTabs } from '../../components/ui/filter-tabs'
 import { CalendarCheckIcon, CalendarIcon, CloseIcon } from '../../components/ui/icons'
 import {
@@ -13,7 +13,11 @@ import {
   filterUserEvents,
   getRegistration,
 } from '../../data/selectors'
-import { useDashboardData } from '../../hooks/useDashboardData'
+import {
+  cancelRegistration,
+  registerEvent,
+  selectMyRegistrations,
+} from '../../features/events/eventsSlice'
 import { pluralize } from '../../lib/format'
 
 const EMPTY_COPY = {
@@ -40,28 +44,31 @@ const EMPTY_COPY = {
 }
 
 export function MyEvents() {
-  const { status, error, data, retry, registerForEvent, cancelRegistration } = useDashboardData()
+  const dispatch = useDispatch()
+  const user = useSelector((state) => state.auth.user)
+  const registrations = useSelector(selectMyRegistrations)
   const [filter, setFilter] = useState('all')
   const [activeEvent, setActiveEvent] = useState(null)
 
+  const events = useMemo(
+    () => registrations.map((item) => item.event),
+    [registrations],
+  )
   const userEvents = useMemo(
-    () => (data ? buildUserEvents(data.events, data.registrations) : []),
-    [data],
+    () => buildUserEvents(events, registrations),
+    [events, registrations],
   )
   const counts = useMemo(() => countUserEvents(userEvents), [userEvents])
   const visible = useMemo(() => filterUserEvents(userEvents, filter), [userEvents, filter])
 
-  if (status === 'error') {
-    return (
-      <ErrorState
-        title="We couldn't load your events"
-        description={error?.message ?? 'The data service did not respond. Please try again.'}
-        onRetry={retry}
-      />
-    )
+  function registerForEvent(event) {
+    dispatch(registerEvent({ event, userEmail: user.email }))
   }
 
-  const isLoading = status === 'loading' || !data
+  function cancelForEvent(registration) {
+    dispatch(cancelRegistration(registration.id))
+  }
+
   const emptyCopy = EMPTY_COPY[filter] ?? EMPTY_COPY.all
   const EmptyIcon = emptyCopy.icon
 
@@ -76,9 +83,7 @@ export function MyEvents() {
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <p className="text-[13px] text-[var(--d-muted)]">
-          {isLoading
-            ? 'Loading your registrations…'
-            : `${counts.all} ${pluralize(counts.all, 'registration')}`}
+          {counts.all} {pluralize(counts.all, 'registration')}
         </p>
         <Button to="/dashboard/discover" variant="secondary" size="sm">
           Find more events
@@ -92,14 +97,7 @@ export function MyEvents() {
         options={filterOptions}
       />
 
-      {isLoading ? (
-        <List>
-          <EventRowSkeleton />
-          <EventRowSkeleton />
-          <EventRowSkeleton />
-          <EventRowSkeleton />
-        </List>
-      ) : visible.length === 0 ? (
+      {visible.length === 0 ? (
         <EmptyState
           icon={<EmptyIcon className="h-4 w-4" />}
           title={emptyCopy.title}
@@ -122,9 +120,9 @@ export function MyEvents() {
             <EventRow
               key={event.id}
               event={event}
-              registration={getRegistration(data.registrations, event.id)}
+              registration={getRegistration(registrations, event.id)}
               onViewDetails={setActiveEvent}
-              onRegister={(target) => registerForEvent(target.id)}
+              onRegister={registerForEvent}
             />
           ))}
         </List>
@@ -132,10 +130,10 @@ export function MyEvents() {
 
       <EventDetailsModal
         event={activeEvent}
-        registration={activeEvent ? getRegistration(data.registrations, activeEvent.id) : null}
+        registration={activeEvent ? getRegistration(registrations, activeEvent.id) : null}
         onClose={() => setActiveEvent(null)}
-        onRegister={(event) => registerForEvent(event.id)}
-        onCancel={(registration) => cancelRegistration(registration.id)}
+        onRegister={registerForEvent}
+        onCancel={cancelForEvent}
       />
     </div>
   )
