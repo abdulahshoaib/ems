@@ -336,7 +336,7 @@ function Landing() {
                 aria-label="Email address"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
-                className="!border-white/15 !bg-black/40 !text-[var(--d-text)] placeholder:!text-[var(--d-subtle)]"
+                className="!border-white/15 !bg-black/40 !text-[var(--d-text)] placeholder:text-(--d-subtle)!"
               />
               <Button type="submit">Notify me</Button>
             </form>
@@ -345,7 +345,7 @@ function Landing() {
       </main>
 
       <footer className="border-t border-white/10">
-        <Container className="flex h-12 items-center justify-between text-[12px] text-[var(--d-subtle)]">
+        <Container className="flex h-12 items-center justify-between text-[12px] text-(--d-subtle)">
           <span>ems</span>
           <Button to="/components" variant="ghost" size="sm">
             Components
