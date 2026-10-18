@@ -1,5 +1,5 @@
 import { Fragment, useCallback, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Avatar } from "./avatar";
 import {
   Breadcrumb,
@@ -13,6 +13,7 @@ import { getBreadcrumbs, getPageTitle } from "./nav-items";
 import { useDismissable } from "../../hooks/useDismissable";
 import { LogOutIcon, MenuIcon, SettingsIcon, UserIcon } from "./icons";
 import { useDispatch } from "react-redux";
+import { logout } from "../../features/auth/authSlice";
 
 const MENU_PANEL =
   "absolute right-0 z-30 mt-2 overflow-hidden rounded-lg border border-[var(--d-line-strong)] bg-[var(--d-surface)] shadow-[0_16px_40px_-12px_rgba(0,0,0,0.9)]";
@@ -23,6 +24,7 @@ function UserMenu({ user }) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const close = useCallback(() => setIsOpen(false), []);
 
   useDismissable(containerRef, isOpen, close);
@@ -83,10 +85,15 @@ function UserMenu({ user }) {
             </Link>
           </div>
           <div className="border-t border-(--d-line) p-1">
-            <Link role="menuitem" className={MENU_ITEM} onClick={handleLogout}>
+            <button
+              type="button"
+              role="menuitem"
+              className={`${MENU_ITEM} w-full`}
+              onClick={handleLogout}
+            >
               <LogOutIcon className="h-3.5 w-3.5" />
               Log out
-            </Link>
+            </button>
           </div>
         </div>
       )}
